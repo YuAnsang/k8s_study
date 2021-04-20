@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backoffice-front-load-balancer
+  namespace: backoffice-stg
+spec:
+  selector:
+    app: backoffice-front
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      name: web
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backoffice-front-svc
+  namespace: backoffice-stg
+  labels:
+    app: backoffice-front
+spec:
+  ports:
+    - name: backoffice-web
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: backoffice-front
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backoffice-front
+  labels:
+    app: backoffice-front
+  namespace: backoffice-stg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backoffice-front
+  template:
+    metadata:
+      labels:
+        app: backoffice-front
+    spec:
+      containers:
+        - name: backoffice-front
+          image: robireceptionbackoffice.azurecr.io/admin-front:latest
+          env:
+            - name: REACT_APP_API_BASE_URL
+              value: http://backoffice-backend
+            - name: REACT_APP_BUILD_TYPE
+              value: backoffice
+            - name: REACT_APP_BUSINESS_TYPE
+              value: backoffice
+            - name: REACT_APP_CALL_TYPE
+              value: INBOUND
+            - name: REACT_APP_NODE_ENV
+              value: development
+            - name: REACT_APP_RELEASE_EXCEPTION
+              value: statistics
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: private-repo-secret
+
+
