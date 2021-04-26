@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backoffice-backend
-          image: robireceptionbackoffice.azurecr.io/admin:latest
+          image: robireceptionbackoffice.azurecr.io/directory-backoffice-prod:directory-7153b60a
           env:
             - name: spring.profiles.active
               value: dev
@@ -29,8 +29,16 @@ spec:
               value: B67;cM[L/e~:Rd[{;ydL%YE*[6jTq&8C
           ports:
             - containerPort: 8081
+          volumeMounts:
+            - name: backend-volume
+              mountPath: /uploads/luis
+      volumes:
+        - name: backend-volume
+          hostPath:
+            path: /uploads/luis
       imagePullSecrets:
         - name: private-repo-secret
+
 ---
 apiVersion: v1
 kind: Service
