@@ -35,20 +35,14 @@ spec:
           image: robireceptionbackoffice.azurecr.io/admin-front:latest
           env:
             - name: REACT_APP_API_BASE_URL
-              value: http://backoffice-backend:8081
+              value: http://backoffice-api-dev-posicube.com/:8081
             - name: REACT_APP_BUILD_TYPE
               value: backoffice
             - name: REACT_APP_BUSINESS_TYPE
               value: backoffice
-            - name: REACT_APP_CALL_TYPE
-              value: INBOUND
             - name: REACT_APP_NODE_ENV
               value: development
-            - name: REACT_APP_RELEASE_EXCEPTION
-              value: statistics
           ports:
             - containerPort: 80
       imagePullSecrets:
         - name: private-repo-secret
-
-
