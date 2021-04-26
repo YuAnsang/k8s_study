@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backoffice-backend
+  labels:
+    app: backoffice-backend
+  namespace: backoffice-stg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backoffice-backend
+  template:
+    metadata:
+      labels:
+        app: backoffice-backend
+    spec:
+      containers:
+        - name: backoffice-backend
+          image: robireceptionbackoffice.azurecr.io/admin:latest
+          env:
+            - name: spring.profiles.active
+              value: dev
+            - name: spring_datasource_url
+              value: jdbc:mysql://backoffice-db-svc:3306/backoffice?serverTimezone=Asia/Seoul&useUnicode=yes&characterEncoding=UTF-8
+            - name: spring_datasource_username
+              value: posicube
+            - name: spring_datasource_password
+              value: B67;cM[L/e~:Rd[{;ydL%YE*[6jTq&8C
+          ports:
+            - containerPort: 8081
+      imagePullSecrets:
+        - name: private-repo-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backoffice-backend-svc
+  namespace: backoffice-stg
+  labels:
+    app: backoffice-backend
+spec:
+  ports:
+    - name: backoffice-backend-rest
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    app: backoffice-backend
