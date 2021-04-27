@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: br-front-svc
+  namespace: br-dev
+  labels:
+    app: br-front
+spec:
+  ports:
+    - name: br-web
+      port: 80
+      targetPort: 80
+  selector:
+    app: br-front
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: br-front
+  labels:
+    app: br-front
+  namespace: br-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: br-front
+  template:
+    metadata:
+      labels:
+        app: br-front
+    spec:
+      containers:
+        - name: br-front
+          image: robireceptionbackoffice.azurecr.io/gov-frontend:2cf029b1
+          env:
+            - name: REACT_APP_API_BASE_URL
+              value: http://br-api-dev-posicube.com
+            - name: REACT_APP_BUILD_TYPE
+              value: boryeong
+            - name: REACT_APP_BUSINESS_TYPE
+              value: boryeong
+            - name: REACT_APP_NODE_ENV
+              value: development
+            - name: REACT_APP_CALL_TYPE
+              value: INBOUND
+            - name: REACT_APP_BRANCH_NAME
+              value: br
+            - name: REACT_APP_RELEASE_EXCEPTION
+              value: statistics
+            - name: REACT_APP_FAVICON_FILE_NAME
+              value: favicon-br.ico
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: private-repo-secret

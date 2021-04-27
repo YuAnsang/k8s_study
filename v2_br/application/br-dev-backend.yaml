@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: br-backend
+  labels:
+    app: br-backend
+  namespace: br-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: br-backend
+  template:
+    metadata:
+      labels:
+        app: br-backend
+    spec:
+      containers:
+        - name: br-backend
+          image: robireceptionbackoffice.azurecr.io/directory-br-dev:directory-d1839afe
+          env:
+            - name: spring.profiles.active
+              value: dev
+            - name: spring_datasource_url
+              value: jdbc:mysql://br-db-svc:3306/br?serverTimezone=Asia/Seoul&useUnicode=yes&characterEncoding=UTF-8
+            - name: spring_datasource_username
+              value: posicube
+            - name: spring_datasource_password
+              value: B67;cM[L/e~:Rd[{;ydL%YE*[6jTq&8C
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: backend-volume
+              mountPath: /uploads/call
+      volumes:
+        - name: backend-volume
+          hostPath:
+            path: /uploads/call
+      imagePullSecrets:
+        - name: private-repo-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: br-backend-svc
+  namespace: br-dev
+  labels:
+    app: br-backend
+spec:
+  ports:
+    - name: br-backend-rest
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    app: br-backend

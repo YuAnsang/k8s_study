@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: br-ingress
+  namespace: br-dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    kubernetes.io.ingress.class: "nginx"
+spec:
+  rules:
+    - host: br-dev-posicube.com
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: br-backend-svc
+                port:
+                  number: 8081
+          - path: /()(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: br-front-svc
+                port:
+                  number: 80

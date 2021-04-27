@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: br-cache
+  namespace: br-dev
+  labels:
+    app: br-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: br-cache
+  template:
+    metadata:
+      labels:
+        app: br-cache
+    spec:
+      containers:
+        - image: redis:6.0.12
+          name: backend-cache
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: cache-volume
+              mountPath: /usr/local/etc/redis/
+              subPath: mysql
+      volumes:
+        - name : cache-volume
+          hostPath:
+            path: /tmp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: br-cache
+  name: br-cache-svc
+  namespace: br-dev
+spec:
+  ports:
+    - name: br-cache-port
+      port: 6379
+      targetPort: 6379
+  selector:
+    app: br-cache
+
