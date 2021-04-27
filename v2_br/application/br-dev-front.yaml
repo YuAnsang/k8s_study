@@ -35,7 +35,7 @@ spec:
           image: robireceptionbackoffice.azurecr.io/gov-frontend:2cf029b1
           env:
             - name: REACT_APP_API_BASE_URL
-              value: http://br-api-dev-posicube.com
+              value: http://br-dev-posicube.com
             - name: REACT_APP_BUILD_TYPE
               value: boryeong
             - name: REACT_APP_BUSINESS_TYPE
